@@ -1,0 +1,77 @@
+---
+import SectionHead from './SectionHead.astro';
+import { experience } from '../data/experience';
+import { education } from '../data/education';
+---
+<section id="experience" class="section" aria-labelledby="experience-title">
+  <div class="wrap">
+    <SectionHead id="experience" title="Experience" lede="Research implementation, data pipelines and production software." />
+
+    <ol class="timeline mt-14">
+      {experience.map((e, i) => (
+        <li class="tl-item grid gap-x-10 gap-y-2 pb-12 last:pb-0 md:grid-cols-12" data-reveal style={`--i:${i}`}>
+          <div class="md:col-span-3">
+            <p class="text-sm font-medium text-muted"><time>{e.start}</time> – <time>{e.end}</time></p>
+            <p class="mt-1 text-sm text-faint">{e.place}</p>
+          </div>
+          <div class="md:col-span-9">
+            <h3 class="font-serif text-[1.55rem] font-medium leading-snug text-ink">{e.role}</h3>
+            <p class="mt-0.5 text-signal">{e.org}</p>
+            <ul class="mt-4 space-y-2 text-muted">
+              {e.points.map((p) => <li class="flex gap-3"><span class="mt-[0.72rem] h-px w-3 shrink-0 bg-faint" aria-hidden="true"></span><span>{p}</span></li>)}
+            </ul>
+            <div class="mt-4 flex flex-wrap gap-1.5">{e.stack.map((s) => <span class="chip">{s}</span>)}</div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<section id="education" class="section" aria-labelledby="education-title">
+  <div class="wrap grid gap-12 md:grid-cols-12">
+    <div class="md:col-span-4">
+      <SectionHead id="education" title="Education" />
+    </div>
+    <ol class="space-y-10 md:col-span-8">
+      {education.map((ed, i) => (
+        <li class="grid gap-x-8 gap-y-1 border-t border-rule pt-6 sm:grid-cols-[7rem_1fr]" data-reveal style={`--i:${i}`}>
+          <p class="text-sm font-medium text-muted"><time>{ed.start}</time> – <time>{ed.end}</time></p>
+          <div>
+            <h3 class="font-serif text-[1.35rem] font-medium leading-snug text-ink">{ed.degree}</h3>
+            <p class="mt-0.5 text-muted">{ed.school}</p>
+            <ul class="mt-2 space-y-1 text-[0.95rem] text-faint">{ed.details.map((d) => <li>{d}</li>)}</ul>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  @media (min-width: 768px) {
+    .timeline { position: relative; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0.5rem;
+      bottom: 0.5rem;
+      left: calc(25% - 1.25rem);
+      width: 1px;
+      background: var(--color-rule-strong);
+    }
+    .tl-item { position: relative; }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: calc(25% - 1.25rem - 4.5px);
+      top: 0.45rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--color-night);
+      border: 1.5px solid var(--color-signal);
+    }
+    .tl-item:first-child::before { background: var(--color-signal); }
+  }
+</style>

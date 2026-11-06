@@ -1,0 +1,127 @@
+---
+import Icon from './Icon.astro';
+
+// Each sentence is a list of segments. Strings are prose the model may rewrite;
+// objects are locked spans that must come back unchanged.
+type Seg = string | { t: string };
+const cite = { t: '\\cite{smith2021}' };
+const dice = { t: '$0.91$' };
+const n = { t: '1,200' };
+
+const before: Seg[] = ['Prior work ', cite, ' reports a Dice score of ', dice, ' on ', n, ' CT scans, although accuracy drops on images from older scanners.'];
+const after: Seg[] = ['Earlier studies ', cite, ' found a Dice score of ', dice, ' across ', n, ' CT scans, but performance falls for images captured on older scanners.'];
+
+const checks = [
+  { k: 0, code: '\\cite{smith2021}', text: 'returned unchanged' },
+  { k: 1, code: '$0.91$', text: 'returned unchanged' },
+  { k: 2, code: '1,200', text: 'returned unchanged' },
+  { k: 3, code: '', text: 'Negation and hedging preserved' },
+];
+const steps = ['Lock', 'Rewrite', 'Verify'];
+const lockIndex = (s: Seg, segs: Seg[]) => segs.filter((x) => typeof x !== 'string').indexOf(s as { t: string });
+---
+<figure class="verify relative rounded-2xl border border-rule bg-deep/80 p-5 shadow-[0_30px_80px_-40px_rgb(0_0_0/0.8)] sm:p-6" data-phase="3" aria-labelledby="verify-title">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <p id="verify-title" class="text-sm font-semibold text-ink">How Recast checks a rewrite</p>
+    <ol class="steps flex items-center gap-1.5 text-[0.8125rem]" aria-label="Pipeline steps">
+      {steps.map((s, i) => (
+        <li class="step flex items-center gap-1.5" data-step={i + 1}>
+          {i > 0 && <span class="h-px w-3 bg-rule-strong" aria-hidden="true" />}
+          <span class="step-pill rounded-full border border-rule px-2 py-0.5 text-faint">{i + 1}. {s}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
+
+  <div class="mt-5 grid">
+    <div class="pane pane-before [grid-area:1/1]">
+      <p class="text-[0.8125rem] font-medium text-faint">Input paragraph</p>
+      <p class="mt-1.5 font-serif text-[1.13rem] leading-relaxed text-ink">
+        {before.map((s) => typeof s === 'string' ? s : <span class="tk token" style={`--k:${lockIndex(s, before)}`}>{s.t}</span>)}
+      </p>
+    </div>
+    <div class="pane pane-after [grid-area:1/1]">
+      <p class="text-[0.8125rem] font-medium text-faint">Model output</p>
+      <p class="mt-1.5 font-serif text-[1.13rem] leading-relaxed text-ink">
+        {after.map((s) => typeof s === 'string' ? s : <span class="tk token">{s.t}</span>)}
+      </p>
+    </div>
+  </div>
+
+  <ul class="mt-5 space-y-2 border-t border-rule pt-4 text-sm">
+    {checks.map((c) => (
+      <li class="check flex items-center gap-2.5 text-muted" style={`--k:${c.k}`}>
+        <span class="tick grid size-5 shrink-0 place-items-center rounded-full bg-ok/15 text-ok"><Icon name="check" size={13} /></span>
+        <span>{c.code && <code class="font-mono text-[0.8rem] text-ink">{c.code}</code>} {c.text}</span>
+      </li>
+    ))}
+  </ul>
+
+  <figcaption class="mt-4 flex gap-2 text-[0.8125rem] leading-snug text-faint">
+    <Icon name="lock" size={14} class="mt-0.5 shrink-0" />
+    <span>Illustrative example. If any locked span is missing from the output, Recast keeps the original paragraph.</span>
+  </figcaption>
+
+  <button type="button" class="replay absolute bottom-3 right-3 hidden rounded-full px-2.5 py-1 text-xs text-faint hover:text-ink" aria-label="Replay the demonstration">Replay</button>
+</figure>
+
+<script>
+  const fig = document.querySelector<HTMLElement>('.verify')!;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const replay = fig.querySelector<HTMLButtonElement>('.replay')!;
+  let timers: number[] = [];
+  let visible = true;
+  let looping = false;
+
+  const set = (p: number) => (fig.dataset.phase = String(p));
+  const clear = () => { timers.forEach(clearTimeout); timers = []; };
+
+  // 0 input → 1 lock → 2 rewrite → 3 verify → hold, then loop.
+  const run = () => {
+    clear();
+    if (reduce.matches) { set(3); return; }
+    looping = true;
+    set(0);
+    timers.push(window.setTimeout(() => set(1), 900));
+    timers.push(window.setTimeout(() => set(2), 2900));
+    timers.push(window.setTimeout(() => set(3), 4300));
+    timers.push(window.setTimeout(() => { looping = false; if (visible) run(); }, 10500));
+  };
+
+  new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    if (visible && !looping) run();
+  }, { threshold: 0.35 }).observe(fig);
+
+  fig.addEventListener('mouseenter', () => replay.classList.remove('hidden'));
+  replay.addEventListener('click', run);
+  reduce.addEventListener('change', run);
+</script>
+
+<style>
+  .pane { transition: opacity 0.9s var(--ease-out-soft), filter 0.9s var(--ease-out-soft); }
+  .verify[data-phase='0'] .pane-after,
+  .verify[data-phase='1'] .pane-after { opacity: 0; filter: blur(4px); visibility: hidden; }
+  .verify[data-phase='2'] .pane-before,
+  .verify[data-phase='3'] .pane-before { opacity: 0; filter: blur(4px); visibility: hidden; }
+
+  /* Locked spans: plain at first, then highlighted one by one. */
+  .tk { transition: color 0.4s, background-color 0.4s, box-shadow 0.4s; transition-delay: calc(var(--k, 0) * 260ms); }
+  .verify[data-phase='0'] .tk { color: inherit; background: transparent; box-shadow: inset 0 0 0 1px transparent; transition-delay: 0s; }
+
+  /* Steps */
+  .step-pill { transition: color 0.3s, border-color 0.3s, background-color 0.3s; }
+  .verify[data-phase='1'] .step[data-step='1'] .step-pill,
+  .verify[data-phase='2'] .step[data-step='2'] .step-pill,
+  .verify[data-phase='3'] .step[data-step='3'] .step-pill {
+    color: var(--color-night); background: var(--color-signal); border-color: var(--color-signal);
+  }
+
+  /* Checks tick in sequence during verify. */
+  .check { transition: opacity 0.4s, transform 0.4s var(--ease-out-soft); }
+  .tick { transition: transform 0.35s var(--ease-out-soft), opacity 0.3s; }
+  .verify:not([data-phase='3']) .check { opacity: 0.35; }
+  .verify:not([data-phase='3']) .tick { transform: scale(0.4); opacity: 0; }
+  .verify[data-phase='3'] .check,
+  .verify[data-phase='3'] .tick { transition-delay: calc(var(--k, 0) * 220ms + 150ms); }
+</style>

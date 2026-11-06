@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rashed9810.github.io/sitemap-index.xml

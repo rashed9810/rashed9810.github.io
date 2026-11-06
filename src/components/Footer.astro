@@ -1,0 +1,26 @@
+---
+import Icon from './Icon.astro';
+import { site, socials } from '../data/site';
+const buildYear = new Date().getFullYear();
+---
+<footer class="border-t border-rule py-10">
+  <div class="wrap flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="font-serif text-lg text-ink">{site.name}</p>
+      <p class="text-sm text-faint">{site.role}</p>
+    </div>
+    <div class="flex items-center gap-1">
+      {socials.filter((s) => s.icon).map((s) => (
+        <a href={s.href} class="icon-link" target="_blank" rel="me noopener"><Icon name={s.icon!} size={18} label={s.label} /></a>
+      ))}
+      <a href={`mailto:${site.email}`} class="icon-link"><Icon name="mail" size={18} label="Email" /></a>
+      <a href="#top" class="btn ml-3 !min-h-10 !py-1.5 !text-sm" aria-label="Back to top"><Icon name="arrow-up" size={16} /> Top</a>
+    </div>
+  </div>
+  <p class="wrap mt-8 text-sm text-faint">© <span id="year">{buildYear}</span> {site.name}. Built with Astro and hosted on GitHub Pages.</p>
+</footer>
+
+<script>
+  const y = document.getElementById('year');
+  if (y) y.textContent = String(new Date().getFullYear());
+</script>

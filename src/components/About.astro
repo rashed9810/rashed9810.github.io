@@ -1,0 +1,41 @@
+---
+import SectionHead from './SectionHead.astro';
+import { site } from '../data/site';
+---
+<section id="about" class="section" aria-labelledby="about-title">
+  <div class="wrap grid gap-12 md:grid-cols-12">
+    <div class="md:col-span-4">
+      <SectionHead id="about" title="About" />
+      <img
+        src={site.portrait.src2x}
+        width="640"
+        height="640"
+        alt={site.portrait.alt}
+        loading="lazy"
+        decoding="async"
+        srcset={`${site.portrait.src} 320w, ${site.portrait.src2x} 640w`}
+        sizes="(min-width: 768px) 17rem, 12rem"
+        class="mt-8 aspect-square w-48 rounded-2xl bg-raise object-cover ring-1 ring-rule md:w-full md:max-w-[17rem]"
+        data-reveal
+      />
+    </div>
+    <div class="space-y-5 text-[1.08rem] leading-[1.75] text-muted md:col-span-8 md:col-start-6 md:pt-2 [&_strong]:font-medium [&_strong]:text-ink">
+      <p data-reveal>
+        I'm a software engineer in Dhaka with a B.Sc. in Computer Science and Engineering from <strong>IUBAT</strong> (2022).
+        My route into AI began with my undergraduate thesis, where I used VGG-16 transfer learning to detect lung diseases
+        in more than 10,000 chest X-ray images, and continued at <strong>Imranslab</strong>, working on biomedical image processing.
+      </p>
+      <p data-reveal>
+        From 2023 to early 2025 I was an Associate AI Engineer at <strong>Next Solution Lab</strong>, an AI research and software company.
+        I implemented methods from research papers, built datasets and preprocessing pipelines, and wrote the APIs and
+        interfaces the team used to work with its data. Since mid-2025 I've been a software engineer at <strong>SEBPO Bangladesh</strong>, building production web applications and backend services.
+      </p>
+      <p data-reveal>
+        The two strands meet in my current work. Recast started from a practical annoyance: LLM rewriters quietly break
+        citations and numbers. It has become the question I want to study properly. How can we constrain and verify what
+        a model generates, so that people can rely on it? I'm looking for graduate research opportunities in reliable and
+        explainable AI, especially where it meets healthcare.
+      </p>
+    </div>
+  </div>
+</section>

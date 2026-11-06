@@ -1,0 +1,96 @@
+---
+import SectionHead from './SectionHead.astro';
+import Icon from './Icon.astro';
+import { projects } from '../data/projects';
+
+const featured = projects.find((p) => p.featured);
+const rest = projects.filter((p) => !p.featured);
+const flow = ['Paragraph in', 'Lock protected spans', 'LLM rewrites prose', 'Verify every lock', 'Rewrite or original out'];
+---
+<section id="projects" class="section" aria-labelledby="projects-title">
+  <div class="wrap">
+    <SectionHead
+      id="projects"
+      title="Projects"
+      lede="Selected engineering work across LLM applications, computer vision and full-stack development."
+    />
+
+    {featured && (
+      <article class="mt-14 overflow-hidden rounded-2xl border border-rule-strong bg-gradient-to-br from-raise to-deep" data-reveal>
+        <div class="grid gap-10 p-6 sm:p-10 lg:grid-cols-12">
+          <div class="lg:col-span-6">
+            <p class="text-sm font-medium text-signal">{featured.category}</p>
+            <h3 class="mt-2 font-serif text-[2.4rem] font-medium leading-none text-ink">{featured.title}</h3>
+            <p class="mt-4 text-lg text-muted">{featured.summary}</p>
+            <div class="mt-6 flex flex-wrap gap-1.5">{featured.stack.map((s) => <span class="chip">{s}</span>)}</div>
+            <div class="mt-8 flex flex-wrap gap-3">
+              {featured.repo && <a href={featured.repo} class="btn btn-primary" target="_blank" rel="noopener"><Icon name="github" size={17} /> View code on GitHub</a>}
+              {featured.demo && <a href={featured.demo} class="btn" target="_blank" rel="noopener"><Icon name="external" size={17} /> Live demo</a>}
+            </div>
+          </div>
+          <div class="lg:col-span-6">
+            <ol class="flow" aria-label="Recast pipeline">
+              {flow.map((f, i) => (
+                <li class="flow-step" style={`--i:${i}`}>
+                  <span class="flow-dot" aria-hidden="true"></span>
+                  <span class="text-ink">{f}</span>
+                </li>
+              ))}
+            </ol>
+            <ul class="mt-8 space-y-3 border-t border-rule pt-6 text-[0.98rem] text-muted">
+              {featured.points.map((pt) => (
+                <li class="flex gap-3"><Icon name="check" size={16} class="mt-1.5 shrink-0 text-signal" /><span>{pt}</span></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </article>
+    )}
+
+    <ul class="mt-6 grid gap-6 md:grid-cols-2">
+      {rest.map((p, i) => (
+        <li class="project group flex flex-col rounded-2xl border border-rule p-6 sm:p-7" data-reveal style={`--i:${i % 2}`}>
+          <p class="text-sm text-faint">{p.category}</p>
+          <h3 class="mt-1.5 font-serif text-[1.5rem] font-medium leading-snug text-ink">{p.title}</h3>
+          <p class="mt-3 text-muted">{p.summary}</p>
+          <ul class="mt-4 space-y-1.5 text-[0.95rem] text-muted">
+            {p.points.map((pt) => <li class="flex gap-2.5"><span class="mt-[0.7rem] size-1 shrink-0 rounded-full bg-faint" aria-hidden="true"></span><span>{pt}</span></li>)}
+          </ul>
+          <div class="mt-5 flex flex-wrap gap-1.5">{p.stack.map((s) => <span class="chip">{s}</span>)}</div>
+          <div class="mt-auto flex flex-wrap items-center gap-4 pt-6 text-sm">
+            {p.repo && <a href={p.repo} class="prose-link inline-flex items-center gap-1.5" target="_blank" rel="noopener"><Icon name="github" size={15} /> Code<span class="sr-only"> for {p.title}</span></a>}
+            {p.demo && <a href={p.demo} class="prose-link inline-flex items-center gap-1.5" target="_blank" rel="noopener"><Icon name="external" size={15} /> Live demo<span class="sr-only"> of {p.title}</span></a>}
+            {p.codeNote && <span class="text-faint">{p.codeNote}</span>}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .project { transition: border-color 0.3s, background-color 0.3s, transform 0.4s var(--ease-out-soft); }
+  .project:hover { border-color: var(--color-rule-strong); background: rgb(255 255 255 / 0.02); }
+
+  .flow { position: relative; display: grid; gap: 0.9rem; padding-left: 1.6rem; }
+  .flow::before {
+    content: '';
+    position: absolute;
+    left: 0.31rem;
+    top: 0.55rem;
+    bottom: 0.55rem;
+    width: 1px;
+    background: linear-gradient(var(--color-signal), var(--color-rule-strong));
+  }
+  .flow-step { position: relative; display: flex; align-items: center; gap: 0.75rem; font-size: 1rem; }
+  .flow-dot {
+    position: absolute;
+    left: -1.6rem;
+    width: 0.66rem;
+    height: 0.66rem;
+    border-radius: 999px;
+    background: var(--color-deep);
+    border: 1.5px solid var(--color-signal);
+  }
+  .flow-step:nth-child(4) .flow-dot { background: var(--color-signal); }
+</style>

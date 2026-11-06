@@ -1,0 +1,73 @@
+---
+import Icon from './Icon.astro';
+import { site, socials, academicProfiles } from '../data/site';
+const profiles = [...socials, ...academicProfiles];
+---
+<section id="contact" class="section relative isolate overflow-hidden" aria-labelledby="contact-title">
+  <div class="contact-glow" aria-hidden="true"></div>
+  <div class="wrap grid gap-12 lg:grid-cols-12">
+    <div class="lg:col-span-7" data-reveal>
+      <h2 id="contact-title" class="text-[clamp(2.2rem,4.4vw,3.4rem)] font-medium leading-[1.08] text-ink">
+        Let's talk about research, AI engineering or a software role.
+      </h2>
+      <p class="mt-5 max-w-[34rem] text-lg text-muted">
+        I'm interested in graduate research positions, collaborations on reliable or medical AI, and engineering roles
+        building AI products. Email is the fastest way to reach me.
+      </p>
+      <div class="mt-9 flex flex-wrap items-center gap-3">
+        <a href={`mailto:${site.email}`} class="btn btn-primary !min-h-12 !px-5 !text-base"><Icon name="mail" size={18} /> {site.email}</a>
+        <button type="button" id="copy-email" class="btn !min-h-12" data-email={site.email}>Copy address</button>
+        <span id="copy-status" class="text-sm text-ok" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="lg:col-span-4 lg:col-start-9" data-reveal style="--i:1">
+      <h3 class="font-medium text-ink">Profiles</h3>
+      <ul class="mt-4 divide-y divide-rule border-y border-rule">
+        {profiles.map((p) => (
+          <li>
+            <a href={p.href} class="profile-row flex items-center justify-between gap-4 py-4 text-muted transition-colors hover:text-ink" target="_blank" rel="me noopener">
+              <span class="flex items-center gap-3">{p.icon ? <Icon name={p.icon} size={18} /> : <span class="size-[18px]" aria-hidden="true" />}{p.label}</span>
+              <Icon name="external" size={15} class="opacity-60" />
+            </a>
+          </li>
+        ))}
+        <li>
+          <a href={site.cv} class="profile-row flex items-center justify-between gap-4 py-4 text-muted transition-colors hover:text-ink" download>
+            <span class="flex items-center gap-3"><Icon name="file" size={18} />Curriculum vitae (PDF)</span>
+            <Icon name="download" size={15} class="opacity-60" />
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+  const btn = document.getElementById('copy-email') as HTMLButtonElement | null;
+  const status = document.getElementById('copy-status');
+  btn?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(btn.dataset.email!);
+      if (status) status.textContent = 'Email address copied';
+    } catch {
+      if (status) status.textContent = 'Copy failed. Select the address to copy it.';
+    }
+    setTimeout(() => status && (status.textContent = ''), 3000);
+  });
+</script>
+
+<style>
+  .contact-glow {
+    position: absolute;
+    z-index: -1;
+    left: -10rem;
+    bottom: -20rem;
+    width: 50rem;
+    height: 34rem;
+    background: radial-gradient(closest-side, rgb(70 211 230 / 0.1), transparent);
+    pointer-events: none;
+  }
+  .profile-row { transition: color 0.2s, padding 0.3s var(--ease-out-soft); }
+  .profile-row:hover { padding-left: 0.35rem; }
+</style>

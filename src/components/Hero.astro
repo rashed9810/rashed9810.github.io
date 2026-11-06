@@ -1,0 +1,90 @@
+---
+import Icon from './Icon.astro';
+import VerifyDemo from './VerifyDemo.astro';
+import { site, socials } from '../data/site';
+const iconSocials = socials.filter((s) => s.icon);
+---
+<section id="top" class="hero relative isolate overflow-hidden pt-28 pb-20 sm:pt-36 md:pb-28">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="grid-lines"></div>
+    <div class="glow"></div>
+  </div>
+
+  <div class="wrap grid items-center gap-14 lg:grid-cols-12 lg:gap-12">
+    <div class="lg:col-span-7">
+      <div class="enter flex items-center gap-4" style="--d:0">
+        <img
+          src={site.avatar.src}
+          srcset={`${site.avatar.src} 1x, ${site.avatar.src2x} 2x`}
+          width="64"
+          height="64"
+          alt={site.portrait.alt}
+          class="size-16 rounded-full bg-raise object-cover ring-1 ring-rule-strong"
+          fetchpriority="high"
+          decoding="async"
+        />
+        <div class="leading-tight">
+          <p class="font-medium text-ink">{site.name}</p>
+          <p class="mt-1 flex items-center gap-1.5 text-sm text-muted"><Icon name="pin" size={14} />{site.location}</p>
+        </div>
+      </div>
+
+      <h1 class="enter mt-8 text-[clamp(2.3rem,4.4vw,3.5rem)] font-medium leading-[1.06] text-ink" style="--d:120">
+        <span class="sr-only">{site.name}: </span>I build language‑model systems whose output can be checked.
+      </h1>
+
+      <p class="enter mt-6 max-w-[38rem] text-lg leading-relaxed text-muted" style="--d:260">
+        Software engineer working toward research in reliable AI. My current project, Recast, stops an LLM from
+        altering citations, equations and numbers when it rewrites academic text, and verifies every output.
+        Before that I implemented research methods as an AI engineer and wrote my thesis on detecting lung disease in chest X-rays.
+      </p>
+
+      <div class="enter mt-9 flex flex-wrap items-center gap-3" style="--d:400">
+        <a href="#research" class="btn btn-primary">Explore my research</a>
+        <a href="#projects" class="btn">View my projects</a>
+        <a href={site.cv} class="btn" download><Icon name="download" size={17} /> Download CV</a>
+      </div>
+
+      <div class="enter mt-8 flex items-center gap-1" style="--d:520">
+        {iconSocials.map((s) => (
+          <a href={s.href} class="icon-link -ml-2 first:-ml-3" rel="me noopener" target="_blank">
+            <Icon name={s.icon!} label={`${s.label} profile`} />
+          </a>
+        ))}
+        <a href={`mailto:${site.email}`} class="icon-link"><Icon name="mail" label="Email" /></a>
+        <span class="ml-3 hidden h-5 w-px bg-rule-strong sm:block" aria-hidden="true"></span>
+        <p class="ml-3 hidden text-sm text-faint sm:block">Open to research collaborations and graduate research positions</p>
+      </div>
+    </div>
+
+    <div class="enter lg:col-span-5" style="--d:640">
+      <VerifyDemo />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .grid-lines {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgb(120 150 190 / 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(120 150 190 / 0.07) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 65% at 60% 35%, #000 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 65% at 60% 35%, #000 30%, transparent 75%);
+  }
+  .glow {
+    position: absolute;
+    width: 56rem;
+    height: 40rem;
+    right: -14rem;
+    top: -12rem;
+    background:
+      radial-gradient(closest-side, rgb(70 211 230 / 0.16), transparent),
+      radial-gradient(closest-side at 30% 70%, rgb(80 120 255 / 0.12), transparent);
+    animation: drift 22s ease-in-out infinite;
+    will-change: transform;
+  }
+</style>

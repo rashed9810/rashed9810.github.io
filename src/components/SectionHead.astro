@@ -1,0 +1,9 @@
+---
+interface Props { id: string; title: string; lede?: string }
+const { id, title, lede } = Astro.props;
+---
+<div class="max-w-[42rem]" data-reveal>
+  <h2 id={`${id}-title`} class="text-[clamp(2rem,3.6vw,2.75rem)] font-medium leading-[1.1] text-ink">{title}</h2>
+  {lede && <p class="mt-4 text-lg leading-relaxed text-muted">{lede}</p>}
+  <slot />
+</div>

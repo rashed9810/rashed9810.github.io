@@ -1,0 +1,112 @@
+---
+import Icon from './Icon.astro';
+import { nav, site } from '../data/site';
+---
+<header id="top-nav" class="fixed inset-x-0 top-0 z-50 border-b border-transparent transition-[background-color,border-color,backdrop-filter] duration-300">
+  <nav class="wrap flex h-16 items-center justify-between gap-6" aria-label="Main">
+    <a href="#top" class="font-serif text-lg font-semibold tracking-tight text-ink">
+      {site.shortName}
+    </a>
+
+    <ul class="hidden items-center gap-1 md:flex">
+      {nav.map((n) => (
+        <li>
+          <a href={n.href} data-nav-link class="relative rounded-full px-3.5 py-2 text-[0.95rem] text-muted transition-colors hover:text-ink aria-[current=true]:text-ink">
+            {n.label}
+          </a>
+        </li>
+      ))}
+      <li class="ml-2">
+        <a href={site.cv} class="btn !min-h-9 !py-1.5 !text-sm" download>
+          <Icon name="download" size={16} /> CV
+        </a>
+      </li>
+    </ul>
+
+    <button
+      type="button"
+      id="menu-btn"
+      class="icon-link -mr-2 md:hidden"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span class="sr-only">Open menu</span>
+      <span data-open><Icon name="menu" size={22} /></span>
+      <span data-close hidden><Icon name="x" size={22} /></span>
+    </button>
+  </nav>
+
+  <div id="mobile-menu" class="border-t border-rule bg-night/95 backdrop-blur-md md:hidden" hidden>
+    <ul class="wrap flex flex-col py-3">
+      {nav.map((n) => (
+        <li><a href={n.href} class="block py-3 text-lg text-ink">{n.label}</a></li>
+      ))}
+      <li class="pt-2 pb-3"><a href={site.cv} class="btn" download><Icon name="download" size={16} /> Download CV</a></li>
+    </ul>
+  </div>
+</header>
+
+<script>
+  const header = document.getElementById('top-nav')!;
+  const btn = document.getElementById('menu-btn')!;
+  const menu = document.getElementById('mobile-menu')!;
+
+  const setScrolled = () => header.toggleAttribute('data-scrolled', window.scrollY > 12);
+  setScrolled();
+  window.addEventListener('scroll', setScrolled, { passive: true });
+
+  const setOpen = (open: boolean) => {
+    btn.setAttribute('aria-expanded', String(open));
+    menu.hidden = !open;
+    btn.querySelector('[data-open]')!.toggleAttribute('hidden', open);
+    btn.querySelector('[data-close]')!.toggleAttribute('hidden', !open);
+    btn.querySelector('.sr-only')!.textContent = open ? 'Close menu' : 'Open menu';
+    header.toggleAttribute('data-menu-open', open);
+  };
+  btn.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'));
+  menu.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) setOpen(false); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu.hidden) { setOpen(false); btn.focus(); }
+  });
+  matchMedia('(min-width: 768px)').addEventListener('change', (m) => m.matches && setOpen(false));
+
+  // Highlight the section currently in view.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
+  const targets = links
+    .map((a) => document.querySelector<HTMLElement>(a.hash))
+    .filter((el): el is HTMLElement => !!el);
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        for (const a of links) a.setAttribute('aria-current', String(a.hash === `#${e.target.id}`));
+      }
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  targets.forEach((t) => io.observe(t));
+</script>
+
+<style>
+  #top-nav[data-scrolled],
+  #top-nav[data-menu-open] {
+    background: rgb(10 19 34 / 0.82);
+    border-color: var(--color-rule);
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  }
+  [data-nav-link]::after {
+    content: '';
+    position: absolute;
+    left: 0.875rem;
+    right: 0.875rem;
+    bottom: 0.3rem;
+    height: 1px;
+    background: var(--color-signal);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s var(--ease-out-soft);
+  }
+  [data-nav-link][aria-current='true']::after,
+  [data-nav-link]:hover::after { transform: scaleX(1); }
+</style>

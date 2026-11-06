@@ -1,0 +1,92 @@
+---
+import SectionHead from './SectionHead.astro';
+import Icon from './Icon.astro';
+import { interests, basisLabel, works, statusLabel, type WorkStatus } from '../data/research';
+
+const order: WorkStatus[] = ['published', 'review', 'ongoing', 'completed'];
+const groupTitle: Record<WorkStatus, string> = {
+  published: 'Published papers',
+  review: 'Under review',
+  ongoing: 'Ongoing research',
+  completed: 'Completed research',
+};
+const groups = order
+  .map((s) => ({ status: s, items: works.filter((w) => w.status === s) }))
+  .filter((g) => g.items.length);
+
+const ME = 'Rashed Miah';
+const authorsHtml = (a: string) =>
+  a.replace(new RegExp(`(Md\\.?\\s*)?${ME}`, 'g'), (m) => `<strong class="font-semibold text-ink">${m}</strong>`);
+---
+<section id="research" class="section" aria-labelledby="research-title">
+  <div class="wrap">
+    <SectionHead
+      id="research"
+      title="Research"
+      lede="My research record so far is an undergraduate thesis and an ongoing open-source project. Each interest below says what it rests on."
+    />
+
+    <h3 class="sr-only">Research interests</h3>
+    <ul class="mt-14 grid gap-x-12 md:grid-cols-2">
+      {interests.map((it, i) => (
+        <li class="border-t border-rule py-7" data-reveal style={`--i:${i % 2}`}>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span class="status" data-s={it.basis}>{basisLabel[it.basis]}</span>
+            {it.evidence && (
+              it.evidence.href
+                ? <a href={it.evidence.href} class="prose-link text-sm text-muted" target="_blank" rel="noopener">{it.evidence.label}</a>
+                : <span class="text-sm text-faint">{it.evidence.label}</span>
+            )}
+          </div>
+          <h4 class="mt-3 font-serif text-[1.45rem] font-medium leading-snug text-ink">{it.title}</h4>
+          <p class="mt-2 max-w-[36rem] text-muted">{it.text}</p>
+        </li>
+      ))}
+    </ul>
+
+    <div class="mt-16 space-y-14">
+      {groups.map((g) => (
+        <div>
+          <h3 class="font-serif text-2xl text-ink" data-reveal>{groupTitle[g.status]}</h3>
+          <ol class="mt-6 space-y-6">
+            {g.items.map((w) => (
+              <li class="work grid gap-6 rounded-2xl border border-rule bg-deep/60 p-6 sm:p-8 md:grid-cols-12" data-reveal>
+                <div class="md:col-span-3">
+                  <span class="status" data-s={w.status}>{statusLabel[w.status]}</span>
+                  <p class="mt-2 text-sm text-faint">{w.kind}</p>
+                  <p class="mt-1 font-serif text-2xl text-muted">{w.year}</p>
+                </div>
+                <div class="md:col-span-9">
+                  <h4 class="font-serif text-[1.55rem] font-medium leading-snug text-ink">{w.title}</h4>
+                  {w.authors && <p class="mt-2 text-sm text-muted" set:html={authorsHtml(w.authors)} />}
+                  {w.venue && <p class="mt-1 text-sm italic text-faint">{w.venue}</p>}
+                  <p class="mt-3 max-w-[44rem] text-muted">{w.summary}</p>
+
+                  <dl class="mt-6 grid gap-x-8 gap-y-4 text-[0.95rem] sm:grid-cols-[8rem_1fr]">
+                    {w.problem && <><dt class="font-medium text-ink">Problem</dt><dd class="text-muted">{w.problem}</dd></>}
+                    {w.approach && <><dt class="font-medium text-ink">Approach</dt><dd class="text-muted">{w.approach}</dd></>}
+                    {w.findings && <><dt class="font-medium text-ink">Status</dt><dd class="text-muted">{w.findings}</dd></>}
+                    {w.stack && (
+                      <><dt class="font-medium text-ink">Tools</dt>
+                      <dd class="flex flex-wrap gap-1.5">{w.stack.map((s) => <span class="chip">{s}</span>)}</dd></>
+                    )}
+                  </dl>
+
+                  {w.links && (
+                    <div class="mt-6 flex flex-wrap gap-2">
+                      {w.links.map((l) => (
+                        <a href={l.href} class="btn !min-h-10 !py-1.5 !text-sm" target="_blank" rel="noopener">
+                          <Icon name={l.href.includes('github.com') ? 'github' : 'external'} size={16} /> {l.label}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

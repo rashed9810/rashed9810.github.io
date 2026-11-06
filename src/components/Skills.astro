@@ -1,0 +1,23 @@
+---
+import SectionHead from './SectionHead.astro';
+import Icon from './Icon.astro';
+import { skills } from '../data/skills';
+---
+<section id="skills" class="section" aria-labelledby="skills-title">
+  <div class="wrap">
+    <SectionHead id="skills" title="Skills" lede="Tools I have used in projects and jobs listed on this page." />
+    <dl class="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+      {skills.map((g, i) => (
+        <div data-reveal style={`--i:${i % 4}`}>
+          <dt class="flex items-center gap-2.5 font-medium text-ink">
+            <span class="grid size-8 place-items-center rounded-lg border border-rule text-signal"><Icon name={g.icon} size={16} /></span>
+            {g.group}
+          </dt>
+          <dd class="mt-4">
+            <ul class="space-y-1.5 text-muted">{g.items.map((s) => <li>{s}</li>)}</ul>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
