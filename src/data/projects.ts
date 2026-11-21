@@ -29,6 +29,19 @@ export const projects: Project[] = [
     repo: 'https://github.com/rashed9810/Recast',
   },
   {
+    title: 'Go, line by line',
+    category: 'Learning project',
+    summary:
+      'An interactive, bilingual (English and Bangla) Go course where each lesson steps through real code and shows memory, goroutines or an algorithm changing at every line.',
+    points: [
+      '26 lessons and 603 animated steps: pointers, slices, interfaces, errors, goroutines, mutexes, context, HTTP middleware and nine DSA patterns.',
+      'Predict mode, quizzes and exercises with hints; all 99 Go samples pass gofmt and go vet.',
+    ],
+    stack: ['Go', 'JavaScript', 'HTML', 'CSS'],
+    repo: 'https://github.com/rashed9810/rashed9810.github.io/tree/main/public/go',
+    demo: '/go/',
+  },
+  {
     title: 'OCR and NER document scanner',
     category: 'Computer vision + NLP',
     summary:

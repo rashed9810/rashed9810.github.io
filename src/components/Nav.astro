@@ -73,7 +73,7 @@ import { nav, site } from '../data/site';
   // Highlight the section currently in view.
   const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
   const targets = links
-    .map((a) => document.querySelector<HTMLElement>(a.hash))
+    .map((a) => (a.hash ? document.querySelector<HTMLElement>(a.hash) : null)) // page links like /go/ have no section
     .filter((el): el is HTMLElement => !!el);
   const io = new IntersectionObserver(
     (entries) => {
